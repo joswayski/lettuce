@@ -21,12 +21,12 @@
 }
 
 :root {
-  --ink: #0e0f0d;
-  --ink-muted: #55584f;
-  --surface: #ffffff;
-  --surface-sunken: #f7f7f5;
-  --line: rgba(14, 15, 13, 0.12);
-  --accent: #5f8a2a;
+  --ink: #f2f3ef;
+  --ink-muted: #9b9e94;
+  --surface: #0c0d0b;
+  --surface-sunken: #16180f;
+  --line: rgba(242, 243, 239, 0.12);
+  --accent: #9ed163;
 
   font-family: Satoshi, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
   color: var(--ink);
@@ -43,7 +43,7 @@ main {
   display: flex;
   flex-direction: column;
   background:
-    radial-gradient(760px 560px at 82% 22%, rgba(140, 196, 74, 0.12), transparent 68%),
+    radial-gradient(820px 600px at 82% 20%, rgba(158, 209, 99, 0.14), transparent 70%),
     var(--surface);
 }
 
@@ -83,10 +83,10 @@ h1 { margin: 0 0 22px; font-size: clamp(3.1rem, 6.4vw, 5.1rem); line-height: 0.9
   text-decoration: none;
   transition: background 0.18s ease, transform 0.18s ease;
 }
-.button:hover { background: #26291f; transform: translateY(-1px); }
+.button:hover { background: #ffffff; transform: translateY(-1px); }
 
 .hero-art { display: grid; place-items: center; }
-.hero-art img { width: min(100%, 480px); height: auto; }
+.hero-art img { width: min(100%, 480px); height: auto; filter: drop-shadow(0 30px 60px rgba(158, 209, 99, 0.18)); }
 
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { animation-duration: 0.01ms !important; animation-iteration-count: 1 !important; transition-duration: 0.01ms !important; }

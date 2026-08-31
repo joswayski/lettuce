@@ -17,7 +17,7 @@ export const Route = createRootRoute({
         content:
           "lettuce.talk is a chat app for your people. Channels, voice, and a space you can shape however you want.",
       },
-      { name: "theme-color", content: "#ffffff" },
+      { name: "theme-color", content: "#0c0d0b" },
       { title: "lettuce.talk — talk about anything" },
     ],
     links: [
@@ -44,7 +44,7 @@ function RootComponent() {
 
 function RootDocument({ children }: Readonly<{ children: ReactNode }>) {
   return (
-    <html lang="en" style={{ colorScheme: "light", backgroundColor: "#ffffff" }}>
+    <html lang="en" style={{ colorScheme: "dark", backgroundColor: "#0c0d0b" }}>
       <head>
         <HeadContent />
       </head>
