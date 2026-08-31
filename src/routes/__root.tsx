@@ -21,7 +21,7 @@ export const Route = createRootRoute({
       { title: "lettuce.talk — talk about anything" },
     ],
     links: [
-      { rel: "icon", type: "image/svg+xml", href: "/assets/letty.svg" },
+      { rel: "icon", type: "image/png", href: "/assets/letty-icon.png" },
       {
         rel: "preload",
         href: "/assets/fonts/satoshi-700.woff2",

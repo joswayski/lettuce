@@ -19,14 +19,13 @@ function Home() {
     <main>
       <nav className="nav" aria-label="Main navigation">
         <a className="wordmark" href="/" aria-label="lettuce.talk home">
-          <img className="wordmark-mark" src="/assets/letty.svg" alt="" width={30} height={30} />
+          <img className="wordmark-mark" src="/assets/letty-icon.png" alt="" width={30} height={27} />
           lettuce<span className="dot">.</span>talk
         </a>
       </nav>
 
       <section className="hero" aria-labelledby="hero-title">
         <div className="hero-copy">
-          <p className="pill">Open source</p>
           <h1 id="hero-title">
             talk about
             <br />
@@ -43,7 +42,7 @@ function Home() {
         </div>
 
         <div className="hero-art">
-          <img src="/assets/letty.svg" alt="Letty, the lettuce.talk mascot" width={440} height={440} />
+          <img src="/assets/letty.webp" alt="Letty, the lettuce.talk mascot" width={489} height={442} />
         </div>
       </section>
     </main>
