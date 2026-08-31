@@ -15,12 +15,21 @@ export const Route = createRootRoute({
       {
         name: "description",
         content:
-          "lettuce.talk is a calmer, customizable home for the conversations that matter.",
+          "lettuce.talk is a chat app for your people: channels, voice, and too many emoji reactions.",
       },
-      { name: "theme-color", content: "#111311" },
+      { name: "theme-color", content: "#fbfbfa" },
       { title: "lettuce.talk — talk about anything" },
     ],
-    links: [{ rel: "icon", type: "image/png", href: "/assets/letty.png" }],
+    links: [
+      { rel: "icon", type: "image/png", href: "/assets/letty.png" },
+      {
+        rel: "preload",
+        href: "/assets/fonts/satoshi-700.woff2",
+        as: "font",
+        type: "font/woff2",
+        crossOrigin: "anonymous",
+      },
+    ],
   }),
   component: RootComponent,
 });
@@ -35,7 +44,7 @@ function RootComponent() {
 
 function RootDocument({ children }: Readonly<{ children: ReactNode }>) {
   return (
-    <html lang="en" style={{ colorScheme: "dark", backgroundColor: "#111311" }}>
+    <html lang="en" style={{ colorScheme: "light", backgroundColor: "#fbfbfa" }}>
       <head>
         <HeadContent />
       </head>

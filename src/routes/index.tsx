@@ -4,111 +4,59 @@ export const Route = createFileRoute("/")({
   component: Home,
 });
 
-function LeafMark({ className = "" }: { className?: string }) {
-  return <img className={className} src="/assets/letty.png" alt="Letty" />;
+const REPO_URL = "https://github.com/joswayski/lettuce";
+const CONTACT_EMAIL = "hello@lettuce.talk";
+
+function GitHubIcon({ className }: { className?: string }) {
+  return (
+    <svg className={className} viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+      <path d="M12 2C6.477 2 2 6.486 2 12.021c0 4.425 2.865 8.18 6.839 9.504.5.092.682-.217.682-.483 0-.237-.009-.866-.013-1.7-2.782.605-3.369-1.343-3.369-1.343-.454-1.158-1.11-1.467-1.11-1.467-.908-.621.069-.609.069-.609 1.004.071 1.532 1.032 1.532 1.032.892 1.53 2.341 1.088 2.91.833.091-.647.35-1.088.636-1.339-2.22-.253-4.555-1.113-4.555-4.952 0-1.093.39-1.988 1.029-2.688-.103-.253-.446-1.272.098-2.65 0 0 .84-.27 2.75 1.026A9.564 9.564 0 0 1 12 6.844c.85.004 1.705.115 2.504.337 1.909-1.296 2.747-1.027 2.747-1.027.546 1.379.202 2.398.1 2.651.64.7 1.028 1.595 1.028 2.688 0 3.848-2.339 4.695-4.566 4.944.359.31.678.92.678 1.855 0 1.338-.012 2.419-.012 2.748 0 .268.18.58.688.481A10.02 10.02 0 0 0 22 12.021C22 6.486 17.523 2 12 2Z" />
+    </svg>
+  );
+}
+
+function Wordmark() {
+  return (
+    <a className="wordmark" href="/" aria-label="lettuce.talk home">
+      lettuce<span className="wordmark-dot">.</span>talk
+    </a>
+  );
 }
 
 function Home() {
   return (
     <main>
       <nav className="nav" aria-label="Main navigation">
-        <a className="wordmark" href="/" aria-label="lettuce.talk home">
-          <span className="wordmark-mark" aria-hidden="true">
-            <LeafMark />
-          </span>
-          <span>lettuce.talk<span className="wordmark-dot">.</span></span>
-        </a>
-        <a className="nav-link" href="mailto:hello@lettuce.talk?subject=lettuce.talk%20updates">
-          Say hello
+        <Wordmark />
+        <a className="source-link" href={REPO_URL} target="_blank" rel="noreferrer">
+          <GitHubIcon className="icon" />
+          <span>GitHub</span>
         </a>
       </nav>
 
       <section className="hero" aria-labelledby="hero-title">
-        <div className="hero-copy">
-          <p className="eyebrow"><span /> A new kind of community space</p>
-          <h1 id="hero-title">Talk about anything.<br /><em>Make it yours.</em></h1>
-          <p className="lede">
-            lettuce.talk is a quieter, more personal place for your people to hang out,
-            organize, and keep the conversation going.
-          </p>
-          <div className="actions">
-            <a className="button button-primary" href="mailto:hello@lettuce.talk?subject=lettuce.talk%20updates">
-              Get updates <span aria-hidden="true">↗</span>
-            </a>
-            <a className="button button-ghost" href="#more">
-              See the idea <span aria-hidden="true">↓</span>
-            </a>
-          </div>
+        <h1 id="hero-title">talk about anything.</h1>
+        <p className="lede">
+          A chat app for your people. Channels, voice, too many emoji reactions. Yes, the
+          name is a pun. No, we are not changing it.
+        </p>
+        <div className="actions">
+          <a className="button button-primary" href={REPO_URL} target="_blank" rel="noreferrer">
+            <GitHubIcon className="icon" />
+            View on GitHub
+          </a>
+          <a className="button button-ghost" href={`mailto:${CONTACT_EMAIL}`}>
+            {CONTACT_EMAIL}
+          </a>
         </div>
-
-        <div className="hero-art" aria-hidden="true">
-          <div className="orb orb-one" />
-          <div className="orb orb-two" />
-          <div className="star star-one">✦</div>
-          <div className="star star-two">✦</div>
-          <div className="mascot-shadow" />
-          <LeafMark className="mascot" />
-          <p className="art-caption">meet Letty</p>
-        </div>
-      </section>
-
-      <section className="principles" id="more" aria-label="What lettuce.talk is about">
-        <article>
-          <span className="principle-number">01</span>
-          <h2>Personal by default.</h2>
-          <p>Set the mood, the rules, and the little details that make a space feel like home.</p>
-        </article>
-        <article>
-          <span className="principle-number">02</span>
-          <h2>Community, not content.</h2>
-          <p>Built around the people you want to hear from—not an endless feed competing for attention.</p>
-        </article>
-        <article>
-          <span className="principle-number">03</span>
-          <h2>Room to grow.</h2>
-          <p>Start with a group chat. Make a whole world when you are ready.</p>
-        </article>
-      </section>
-
-      <section className="preview" aria-label="A glimpse of a lettuce.talk community">
-        <div className="preview-copy">
-          <p className="eyebrow"><span /> Built for your corner of the internet</p>
-          <h2>Everything has a place.<br />Even the silly stuff.</h2>
-          <p>Keep the group chat alive without making it feel like work.</p>
-        </div>
-        <div className="chat-window" aria-hidden="true">
-          <aside>
-            <div className="mini-mark"><LeafMark /></div>
-            <div className="rail-dot active" />
-            <div className="rail-dot" />
-            <div className="rail-dot" />
-          </aside>
-          <div className="channels">
-            <strong>After Hours</strong>
-            <small>TEXT CHANNELS</small>
-            <span className="selected"># general</span>
-            <span># ideas</span>
-            <span># movie-night</span>
-            <small>VOICE CHANNELS</small>
-            <span>◖ lounge</span>
-          </div>
-          <div className="messages">
-            <div className="chat-header"># general <span>24 members</span></div>
-            <div className="message"><b>Mika</b><time>9:41 AM</time><p>Okay, this feels like our little corner of the internet now.</p></div>
-            <div className="message"><b>Jordan</b><time>9:42 AM</time><p>Movie night is officially back on ✦</p></div>
-            <div className="message letty-message"><LeafMark /><div><b>Letty <i>BOT</i></b><time>9:43 AM</time><p>I saved the vote for later.</p></div></div>
-            <div className="message-input">Message #general <span>＋</span></div>
-          </div>
-        </div>
+        <p className="note">Still being built. Come back soon, or watch the repo.</p>
       </section>
 
       <footer>
-        <a className="wordmark" href="/">
-          <span className="wordmark-mark" aria-hidden="true"><LeafMark /></span>
-          <span>lettuce.talk<span className="wordmark-dot">.</span></span>
+        <Wordmark />
+        <a href={REPO_URL} target="_blank" rel="noreferrer">
+          Source
         </a>
-        <p>Where conversations grow.</p>
-        <a href="mailto:hello@lettuce.talk">hello@lettuce.talk</a>
       </footer>
     </main>
   );

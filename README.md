@@ -1,7 +1,10 @@
 # lettuce.talk
 
-The landing page for [lettuce.talk](https://lettuce.talk): a more personal,
-customizable home for communities.
+The landing page for [lettuce.talk](https://lettuce.talk): a chat app for your
+people.
+
+Type is [Satoshi](https://www.fontshare.com/fonts/satoshi), self-hosted from
+`public/assets/fonts`.
 
 ## Development
 
