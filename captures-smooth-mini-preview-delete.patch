@@ -1,0 +1,327 @@
+From f0e8f2b3be77571148aa12b11e43042db7849179 Mon Sep 17 00:00:00 2001
+From: Cursor Agent <cursoragent@cursor.com>
+Date: Mon, 31 Aug 2026 07:01:09 +0000
+Subject: [PATCH] Keep mini-preview delete chrome stable during disintegration
+
+The first delete frame was dropping the Delete tooltip, clipboard pill, and
+opaque Save file control, while folder chips inherited the card dust
+brightness filter and covered the live icon. Freeze hovered chrome, keep
+clipboard above the blurred source, and start the folder breakup 50ms
+earlier without a darkened plate.
+---
+ apps/desktop/ui/src/App.tsx                   |  4 ++
+ .../ui/src/MiniPreviewsHidden.test.tsx        | 17 +++++-
+ apps/desktop/ui/src/Thumbnail.test.tsx        |  5 +-
+ apps/desktop/ui/src/ThumbnailCard.test.tsx    | 23 ++++++++
+ .../ui/src/lib/miniPreviewsHidden.test.ts     |  1 +
+ apps/desktop/ui/src/lib/miniPreviewsHidden.ts |  8 ++-
+ .../ui/src/lib/thumbnailLayout.test.ts        | 28 +++++++++
+ apps/desktop/ui/src/styles/mini-preview.css   | 57 +++++++++++++++----
+ 8 files changed, 127 insertions(+), 16 deletions(-)
+
+diff --git a/apps/desktop/ui/src/App.tsx b/apps/desktop/ui/src/App.tsx
+index 4549e54..e272900 100644
+--- a/apps/desktop/ui/src/App.tsx
++++ b/apps/desktop/ui/src/App.tsx
+@@ -125,6 +125,7 @@ import {
+   miniPreviewsHiddenLabel,
+   prepareMiniPreviewFolderMotion,
+   shouldIgnoreMiniPreviewsHiddenCursorEvents,
++  MINI_PREVIEW_FOLDER_DUST_LEAD_MS,
+   MINI_PREVIEW_FOLDER_MORPH_MS,
+   MINI_PREVIEW_FOLDER_RESTORE_LEAD_MS,
+   MINI_PREVIEWS_RESTORED_EVENT,
+@@ -6280,6 +6281,9 @@ export function Thumbnail() {
+         ].filter(Boolean).join(" ")}
+         aria-label="Hide previews"
+         data-tooltip="Hide previews"
++        style={{
++          ["--mini-preview-folder-dust-lead" as string]: `${MINI_PREVIEW_FOLDER_DUST_LEAD_MS}ms`,
++        }}
+         disabled={collapseLeaving || folderMotion !== "idle"}
+         onClick={collapseIntoFolder}
+       >
+diff --git a/apps/desktop/ui/src/MiniPreviewsHidden.test.tsx b/apps/desktop/ui/src/MiniPreviewsHidden.test.tsx
+index 0264529..b4a9be2 100644
+--- a/apps/desktop/ui/src/MiniPreviewsHidden.test.tsx
++++ b/apps/desktop/ui/src/MiniPreviewsHidden.test.tsx
+@@ -127,10 +127,25 @@ describe("MiniPreviewsHiddenChip", () => {
+       /\.thumbnail-collapse\.thumbnail-collapse-leaving\s*\{([\s\S]*?)\n\}/,
+     );
+ 
+-    expect(exitRule?.[1]).toMatch(/thumbnail-folder-source-fade 0\.18s 0\.42s/);
++    expect(exitRule?.[1]).toMatch(
++      /thumbnail-folder-source-fade 0\.18s var\(--mini-preview-folder-dust-lead\)/,
++    );
+     expect(exitRule?.[1]).not.toMatch(/mask-image|radial-gradient/);
+     expect(miniPreviewStyles).toMatch(/\.thumbnail-collapse-dust-layer/);
+     expect(miniPreviewStyles).toMatch(/\.thumbnail-collapse-dust-surface/);
++    expect(miniPreviewStyles).toMatch(
++      /\.thumbnail-collapse-dust-layer \.thumbnail-collapse-dust-chip\s*\{[^}]*filter:\s*none/,
++    );
++    expect(miniPreviewStyles).toMatch(
++      /\.thumbnail-collapse-dust-layer \.thumbnail-collapse-dust-chip\s*\{[^}]*opacity:\s*0/,
++    );
++    expect(miniPreviewStyles).toMatch(
++      /\.thumbnail-collapse-dust-surface\s*\{[^}]*background:\s*transparent/,
++    );
++    expect(miniPreviewStyles).not.toMatch(
++      /\.thumbnail-collapse-dust-surface\s*\{[^}]*background:\s*var\(--glass-strong-solid\)/,
++    );
++    expect(miniPreviewStyles).toMatch(/--mini-preview-folder-dust-lead:\s*370ms/);
+   });
+ 
+   it("restores the stack from the parked count chip", async () => {
+diff --git a/apps/desktop/ui/src/Thumbnail.test.tsx b/apps/desktop/ui/src/Thumbnail.test.tsx
+index 636a74a..93eeb86 100644
+--- a/apps/desktop/ui/src/Thumbnail.test.tsx
++++ b/apps/desktop/ui/src/Thumbnail.test.tsx
+@@ -8,7 +8,7 @@ import {
+   THUMBNAIL_CARD_SLOT_PX,
+   THUMBNAIL_DELETE_STACK_MOTION_DELAY_MS,
+ } from "./lib/thumbnailLayout";
+-import { MINI_PREVIEW_FOLDER_MORPH_MS } from "./lib/miniPreviewsHidden";
++import { MINI_PREVIEW_FOLDER_DUST_LEAD_MS, MINI_PREVIEW_FOLDER_MORPH_MS } from "./lib/miniPreviewsHidden";
+ 
+ vi.mock("@tauri-apps/api/core", () => ({
+   invoke: vi.fn(),
+@@ -732,6 +732,9 @@ describe("Thumbnail", () => {
+     render(<Thumbnail />);
+     const hide = await screen.findByRole("button", { name: "Hide previews" });
+     expect(hide).toHaveAttribute("data-tooltip", "Hide previews");
++    expect(hide.style.getPropertyValue("--mini-preview-folder-dust-lead")).toBe(
++      `${MINI_PREVIEW_FOLDER_DUST_LEAD_MS}ms`,
++    );
+     expect(Array.from(hide.querySelectorAll("path")).some(
+       (path) => path.getAttribute("d")?.includes("10.5"),
+     )).toBe(true);
+diff --git a/apps/desktop/ui/src/ThumbnailCard.test.tsx b/apps/desktop/ui/src/ThumbnailCard.test.tsx
+index aeb61e7..7916cb8 100644
+--- a/apps/desktop/ui/src/ThumbnailCard.test.tsx
++++ b/apps/desktop/ui/src/ThumbnailCard.test.tsx
+@@ -812,6 +812,29 @@ describe("ThumbnailCard", () => {
+     expect(card.querySelector(".thumbnail-dust-layer")).not.toBeNull();
+   });
+ 
++  it("keeps Save, clipboard, and Delete chrome mounted when disintegration starts", () => {
++    render(
++      <ThumbnailCard
++        artifact={artifact(null)}
++        clipboardCurrent
++        viewerActive={false}
++        onRemoved={() => undefined}
++      />,
++    );
++
++    act(() => {
++      screen.getByRole("button", { name: "Delete" }).click();
++    });
++
++    const card = screen.getByRole("article");
++    const save = screen.getByRole("button", { name: "Save file" });
++    const remove = screen.getByRole("button", { name: "Delete" });
++    expect(card).toHaveClass("thumbnail-exit-delete");
++    expect(save).toBeDisabled();
++    expect(remove).toHaveAttribute("data-tooltip", "Delete");
++    expect(screen.getByText("Copied to clipboard")).toBeInTheDocument();
++  });
++
+   it("keeps corner particles as clipped slices of the full rounded surface", () => {
+     render(
+       <ThumbnailCard
+diff --git a/apps/desktop/ui/src/lib/miniPreviewsHidden.test.ts b/apps/desktop/ui/src/lib/miniPreviewsHidden.test.ts
+index 2e86b1c..333ff49 100644
+--- a/apps/desktop/ui/src/lib/miniPreviewsHidden.test.ts
++++ b/apps/desktop/ui/src/lib/miniPreviewsHidden.test.ts
+@@ -53,6 +53,7 @@ describe("buildMiniPreviewFolderDustParticles", () => {
+     ));
+ 
+     expect(nearest.delayMs).toBeLessThan(farthest.delayMs);
++    expect(MINI_PREVIEW_FOLDER_DUST_LEAD_MS).toBe(370);
+   });
+ });
+ 
+diff --git a/apps/desktop/ui/src/lib/miniPreviewsHidden.ts b/apps/desktop/ui/src/lib/miniPreviewsHidden.ts
+index b09d306..ce33358 100644
+--- a/apps/desktop/ui/src/lib/miniPreviewsHidden.ts
++++ b/apps/desktop/ui/src/lib/miniPreviewsHidden.ts
+@@ -14,8 +14,12 @@ export function miniPreviewsHiddenLabel(count: number): string {
+ /** Compact folder control dimensions in the thumbnail window. */
+ export const MINI_PREVIEW_FOLDER_SIZE_PX = 40;
+ 
+-/** Hold the folder together until the outgoing card reaches its top-right edge. */
+-export const MINI_PREVIEW_FOLDER_DUST_LEAD_MS = 420;
++/**
++ * Hold the folder together until the outgoing card's ash front reaches it.
++ * 50ms earlier than the previous 420ms hold so the icon starts breaking as
++ * the preview wave blows past, instead of sitting fully formed.
++ */
++export const MINI_PREVIEW_FOLDER_DUST_LEAD_MS = 370;
+ 
+ /** A shorter copy of the card dissolve wave, scaled to the compact control. */
+ export const MINI_PREVIEW_FOLDER_DUST_WAVE_MS = 420;
+diff --git a/apps/desktop/ui/src/lib/thumbnailLayout.test.ts b/apps/desktop/ui/src/lib/thumbnailLayout.test.ts
+index 244fa18..1a882b5 100644
+--- a/apps/desktop/ui/src/lib/thumbnailLayout.test.ts
++++ b/apps/desktop/ui/src/lib/thumbnailLayout.test.ts
+@@ -68,6 +68,34 @@ describe("thumbnail stack layout", () => {
+ 
+     expect(Number(sourceLayer?.[1])).toBeGreaterThan(Number(dustLayer?.[1]));
+     expect(sourceFade?.[1]).toMatch(/filter:\s*blur\(2px\) brightness\(0\.5\)/);
++    expect(sourceFade?.[1]).toMatch(/0%,\s*20%/);
++  });
++
++  it("keeps hovered delete chrome on the first dissolve frame", () => {
++    const deleteTooltip = thumbnailStyles.match(
++      /\.thumbnail-exit-delete \.icon-button\.delete::after\s*\{([^}]*)\}/,
++    );
++    const deleteHover = thumbnailStyles.match(
++      /\.thumbnail-exit-delete \.icon-button\.delete\s*\{([^}]*)\}/,
++    );
++    const disabledSave = thumbnailStyles.match(
++      /\.thumbnail-exit-delete \.thumbnail-main-actions button:disabled,\s*\.thumbnail-exit-delete \.icon-button:disabled\s*\{([^}]*)\}/,
++    );
++    const bottomBar = thumbnailStyles.match(
++      /\.thumbnail-exit-delete \.thumbnail-bottom-bar\s*\{([^}]*)\}/,
++    );
++    const dustChip = thumbnailStyles.match(
++      /\.thumbnail-dust\s*\{([^}]*)\}/,
++    );
++
++    expect(thumbnailStyles).toMatch(
++      /\.thumbnail-card\.thumbnail-exiting:not\(\.thumbnail-exit-delete\) \.icon-button::after/,
++    );
++    expect(deleteTooltip?.[1]).toMatch(/opacity:\s*1/);
++    expect(deleteHover?.[1]).toMatch(/background:\s*var\(--theme-signal\)/);
++    expect(disabledSave?.[1]).toMatch(/opacity:\s*1/);
++    expect(bottomBar?.[1]).toMatch(/z-index:\s*8/);
++    expect(dustChip?.[1]).toMatch(/filter:\s*blur\(2px\) brightness\(0\.5\)/);
+   });
+ 
+   it("fades the mini-preview frame with the delete dissolve", () => {
+diff --git a/apps/desktop/ui/src/styles/mini-preview.css b/apps/desktop/ui/src/styles/mini-preview.css
+index 4527073..f8b0607 100644
+--- a/apps/desktop/ui/src/styles/mini-preview.css
++++ b/apps/desktop/ui/src/styles/mini-preview.css
+@@ -93,6 +93,7 @@
+ }
+ 
+ .thumbnail-collapse {
++  --mini-preview-folder-dust-lead: 370ms;
+   position: absolute;
+   z-index: 20;
+   top: auto;
+@@ -318,7 +319,7 @@
+ }
+ 
+ .thumbnail-collapse.thumbnail-collapse-leaving {
+-  animation: thumbnail-folder-source-fade 0.18s 0.42s linear both;
++  animation: thumbnail-folder-source-fade 0.18s var(--mini-preview-folder-dust-lead) linear both;
+   pointer-events: none;
+ }
+ 
+@@ -349,8 +350,15 @@
+   pointer-events: none;
+ }
+ 
+-.thumbnail-collapse-dust-chip {
++/*
++ * Folder chips must not inherit the card-dust brightness filter — that rule
++ * comes later and would otherwise paint a darkened plate over the live icon.
++ * Opacity stays 0 until WAAPI starts each chip so the original control remains
++ * the only visible folder during the lead-in.
++ */
++.thumbnail-collapse-dust-layer .thumbnail-collapse-dust-chip {
+   filter: none;
++  opacity: 0;
+ }
+ 
+ .thumbnail-collapse-dust-surface {
+@@ -362,13 +370,14 @@
+   padding: 0 6px;
+   align-items: center;
+   gap: var(--s-3);
+-  border: 1px solid var(--glass-border);
++  /* Transparent replica of the 40px control: keep padding/border so the
++     yellow icon and check badge sit on the same pixels as the live button,
++     without stacking a second dark glass plate over it. */
++  border: 1px solid transparent;
+   border-radius: var(--r-xl);
+   color: var(--glass-text);
+-  background: var(--glass-strong-solid);
+-  box-shadow:
+-    inset 0 1px 0 rgba(255, 255, 255, 0.07),
+-    0 1px 3px rgba(0, 0, 0, 0.46);
++  background: transparent;
++  box-shadow: none;
+   overflow: hidden;
+   pointer-events: none;
+ }
+@@ -1381,8 +1390,8 @@ html.thumbnail-native-tracking[data-thumbnail-cursor] :is(.thumbnail-collapse, .
+   cursor: default !important;
+ }
+ 
+-.thumbnail-card.thumbnail-exiting .icon-button::after,
+-.thumbnail-card.thumbnail-exiting .thumbnail-editor-control-tip {
++.thumbnail-card.thumbnail-exiting .thumbnail-editor-control-tip,
++.thumbnail-card.thumbnail-exiting:not(.thumbnail-exit-delete) .icon-button::after {
+   opacity: 0 !important;
+   transition: none !important;
+ }
+@@ -1534,10 +1543,33 @@ html.thumbnail-native-tracking[data-thumbnail-cursor] :is(.thumbnail-collapse, .
+ }
+ 
+ .thumbnail-exit-delete .thumbnail-bottom-bar {
++  z-index: 8;
+   transition: none !important;
+ }
+ 
+-.thumbnail-exit-delete .icon-button::after,
++/*
++ * Clicking Delete clears :hover / native pointer hover (inert + click-through).
++ * Freeze the hovered delete chrome so the first dissolve frame matches the
++ * screenshot the user was looking at — tooltip, red trash, and opaque Save.
++ */
++.thumbnail-exit-delete .icon-button.delete {
++  color: #fff;
++  background: var(--theme-signal);
++  transform: translateY(-1px) scale(1.04);
++}
++
++.thumbnail-exit-delete .icon-button.delete::after {
++  opacity: 1;
++  transform: translate(0, 0);
++  transition: none;
++}
++
++.thumbnail-exit-delete .thumbnail-main-actions button:disabled,
++.thumbnail-exit-delete .icon-button:disabled {
++  opacity: 1;
++  cursor: default;
++}
++
+ .thumbnail-exit-delete .thumbnail-editor-control-tip {
+   opacity: 0 !important;
+   transition: none !important;
+@@ -1608,7 +1640,8 @@ html.thumbnail-native-tracking[data-thumbnail-cursor] :is(.thumbnail-collapse, .
+ }
+ 
+ @keyframes thumbnail-delete-img-fade {
+-  0% {
++  0%,
++  20% {
+     opacity: 1;
+     filter: blur(2px) brightness(0.5);
+     transform: scale(1.015);
+@@ -1650,7 +1683,7 @@ html.thumbnail-native-tracking[data-thumbnail-cursor] :is(.thumbnail-collapse, .
+   display: block;
+   border-radius: 0;
+   overflow: hidden;
+-  filter: brightness(0.5);
++  filter: blur(2px) brightness(0.5);
+   opacity: 1;
+   transform: translate3d(0, 0, 0) rotate(0deg) scale(1);
+   box-shadow: none;
+-- 
+2.43.0
+
