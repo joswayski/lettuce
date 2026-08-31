@@ -5,9 +5,6 @@ export const Route = createFileRoute("/")({
 });
 
 const REPO_URL = "https://github.com/joswayski/lettuce";
-const CONTACT_EMAIL = "hello@lettuce.talk";
-
-const CHANNELS = ["#general", "#ideas", "#movie-night", "#off-topic"];
 
 function GitHubIcon() {
   return (
@@ -20,44 +17,35 @@ function GitHubIcon() {
 function Home() {
   return (
     <main>
-      <div className="frame" aria-hidden="true" />
-
       <nav className="nav" aria-label="Main navigation">
         <a className="wordmark" href="/" aria-label="lettuce.talk home">
+          <img className="wordmark-mark" src="/assets/letty.svg" alt="" width={30} height={30} />
           lettuce<span className="dot">.</span>talk
-        </a>
-        <a className="ghost-link" href={REPO_URL} target="_blank" rel="noreferrer">
-          <GitHubIcon />
-          <span>Source</span>
         </a>
       </nav>
 
       <section className="hero" aria-labelledby="hero-title">
-        <p className="tag">
-          <span className="pulse" aria-hidden="true" />
-          Growing
-        </p>
-        <h1 id="hero-title">
-          talk about anything.
-          <span>with anyone.</span>
-        </h1>
-        <p className="lede">
-          A chat app for group chats that got out of hand and communities that never
-          slow down. Channels, voice, and a home that actually looks like yours.
-        </p>
-        <ul className="channels">
-          {CHANNELS.map((channel) => (
-            <li key={channel}>{channel}</li>
-          ))}
-        </ul>
-      </section>
+        <div className="hero-copy">
+          <p className="pill">Open source</p>
+          <h1 id="hero-title">
+            talk about
+            <br />
+            anything.
+          </h1>
+          <p className="lede">
+            lettuce.talk is a chat app for your people. Channels, voice, and a space you
+            can shape however you want.
+          </p>
+          <a className="button" href={REPO_URL} target="_blank" rel="noreferrer">
+            <GitHubIcon />
+            View on GitHub
+          </a>
+        </div>
 
-      <footer>
-        <span className="wordmark">
-          lettuce<span className="dot">.</span>talk
-        </span>
-        <a href={`mailto:${CONTACT_EMAIL}`}>{CONTACT_EMAIL}</a>
-      </footer>
+        <div className="hero-art">
+          <img src="/assets/letty.svg" alt="Letty, the lettuce.talk mascot" width={440} height={440} />
+        </div>
+      </section>
     </main>
   );
 }

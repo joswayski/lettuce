@@ -1,0 +1,68 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 400" role="img" aria-label="Letty, the lettuce.talk mascot">
+  <defs>
+    <radialGradient id="leaf" cx="38%" cy="30%" r="78%">
+      <stop offset="0%" stop-color="#b6e278" />
+      <stop offset="55%" stop-color="#8ecb52" />
+      <stop offset="100%" stop-color="#6aa93c" />
+    </radialGradient>
+    <radialGradient id="leafBack" cx="42%" cy="34%" r="80%">
+      <stop offset="0%" stop-color="#9ed163" />
+      <stop offset="100%" stop-color="#5d9a34" />
+    </radialGradient>
+    <radialGradient id="body" cx="36%" cy="28%" r="82%">
+      <stop offset="0%" stop-color="#e6f8c8" />
+      <stop offset="48%" stop-color="#c3ea90" />
+      <stop offset="100%" stop-color="#93cc5b" />
+    </radialGradient>
+    <radialGradient id="limb" cx="35%" cy="25%" r="85%">
+      <stop offset="0%" stop-color="#bde384" />
+      <stop offset="100%" stop-color="#7cb945" />
+    </radialGradient>
+  </defs>
+
+  <g>
+    <ellipse cx="200" cy="352" rx="104" ry="17" fill="#14150f" opacity="0.07" />
+
+    <g fill="url(#leafBack)">
+      <ellipse cx="200" cy="96" rx="72" ry="60" />
+      <ellipse cx="104" cy="140" rx="60" ry="54" transform="rotate(-22 104 140)" />
+      <ellipse cx="296" cy="140" rx="60" ry="54" transform="rotate(22 296 140)" />
+      <ellipse cx="72" cy="222" rx="52" ry="48" />
+      <ellipse cx="328" cy="222" rx="52" ry="48" />
+      <ellipse cx="110" cy="296" rx="46" ry="42" />
+      <ellipse cx="290" cy="296" rx="46" ry="42" />
+    </g>
+
+    <g fill="url(#leaf)">
+      <ellipse cx="200" cy="118" rx="60" ry="50" />
+      <ellipse cx="122" cy="152" rx="50" ry="44" transform="rotate(-20 122 152)" />
+      <ellipse cx="278" cy="152" rx="50" ry="44" transform="rotate(20 278 152)" />
+    </g>
+
+    <g fill="url(#limb)">
+      <ellipse cx="66" cy="252" rx="30" ry="24" transform="rotate(-24 66 252)" />
+      <ellipse cx="334" cy="252" rx="30" ry="24" transform="rotate(24 334 252)" />
+      <ellipse cx="164" cy="344" rx="26" ry="20" />
+      <ellipse cx="236" cy="344" rx="26" ry="20" />
+    </g>
+
+    <circle cx="200" cy="228" r="112" fill="url(#body)" />
+    <ellipse cx="160" cy="176" rx="52" ry="34" fill="#ffffff" opacity="0.28" transform="rotate(-18 160 176)" />
+
+    <g fill="#f0a3a3" opacity="0.5">
+      <ellipse cx="130" cy="252" rx="20" ry="12" />
+      <ellipse cx="270" cy="252" rx="20" ry="12" />
+    </g>
+
+    <g fill="#16180f">
+      <ellipse cx="166" cy="222" rx="17" ry="22" />
+      <ellipse cx="234" cy="222" rx="17" ry="22" />
+    </g>
+    <g fill="#ffffff" opacity="0.9">
+      <ellipse cx="160" cy="213" rx="6" ry="7" />
+      <ellipse cx="228" cy="213" rx="6" ry="7" />
+    </g>
+
+    <path d="M176 262c6 14 42 14 48 0 0 0-6 26-24 26s-24-26-24-26Z" fill="#16180f" />
+  </g>
+</svg>
