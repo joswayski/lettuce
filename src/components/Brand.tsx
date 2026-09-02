@@ -14,17 +14,20 @@ export function Wordmark({ compact = false }: { compact?: boolean }) {
 
 export function GitHubButton({
   children = "Keep up with latest changes",
+  short,
   variant = "primary",
   icon = true,
 }: {
   children?: string;
+  short?: string;
   variant?: "primary" | "ghost" | "soft";
   icon?: boolean;
 }) {
   return (
     <a className={`btn btn-${variant}`} href={REPO_URL} target="_blank" rel="noreferrer">
       {icon ? <GitHubIcon className="icon" /> : <LeafIcon className="icon" />}
-      <span>{children}</span>
+      <span className="btn-full">{children}</span>
+      {short ? <span className="btn-short">{short}</span> : null}
     </a>
   );
 }

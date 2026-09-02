@@ -16,7 +16,7 @@ export function Bento() {
         <p className="jp-mark" lang="ja">
           レタストーク
         </p>
-        <GitHubButton>Keep up with latest changes</GitHubButton>
+        <GitHubButton short="GitHub">Keep up with latest changes</GitHubButton>
       </header>
 
       <div className="bento">
@@ -58,9 +58,9 @@ export function Bento() {
 
         <article className="tile tile-voice">
           <div className="voice-people">
-            {["mossy", "kai", "sprout", "olive"].map((name) => (
+            {["mossy", "kai", "sprout", "olive"].map((name, index) => (
               <div key={name} className="voice-tile">
-                <img src="/assets/letty.webp" alt="" />
+                <img src="/assets/letty.webp" alt="" style={{ filter: `hue-rotate(${index * 32}deg)` }} />
                 <span>
                   {name}
                   <small>in room</small>

@@ -40,7 +40,7 @@ export function Garden() {
         </nav>
         <div className="topnav-actions">
           <GitHubButton variant="ghost">GitHub</GitHubButton>
-          <GitHubButton>Keep up with latest changes</GitHubButton>
+          <GitHubButton short="GitHub">Keep up with latest changes</GitHubButton>
         </div>
       </header>
 

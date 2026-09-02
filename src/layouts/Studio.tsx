@@ -10,7 +10,7 @@ export function Studio() {
           <span className="jp-inline">部屋</span>
           Step inside the product. This is lettuce.talk as a living room, not a brochure.
         </p>
-        <GitHubButton>Keep up with latest changes</GitHubButton>
+        <GitHubButton short="GitHub">Keep up with latest changes</GitHubButton>
       </header>
       <AppPreview stage />
     </div>
